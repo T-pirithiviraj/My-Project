@@ -1,15 +1,14 @@
-.App {
-  text-align: center;
-}
+
 
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
+  height: 30vmin;
 }
 
 .App-header {
   background-color: #282c34;
-  min-height: 100vh;
+  width:100%;
+  height:130px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -18,8 +17,70 @@
   color: white;
 }
 
+
 .App-link {
   color: #61dafb;
+}
+.input{
+  align-items:center;
+  text-align:center;
+  border-color: 1px solid black;
+  background-color:#3d6c8a; 
+  border-style:solid;
+  padding:20px;
+  display:block;
+  width:40%; 
+  margin:auto; 
+}
+span{
+  margin-left:50px;
+  padding:30px;
+}
+textarea{
+  position:relative;
+  top:10px;
+}
+.hr{
+  display:inline;
+}
+.hr_data{
+ margin-top:0px;
+ width:100%; 
+ margin-left:0px;  
+ background-color:rgba(152, 158, 160, 0.89);
+  
+}
+table{
+  margin-top:0px;
+  border-collapse:collapse; 
+  width:100%;
+}
+img{
+  width:50px;
+  height:50px;
+}
+.editData{
+  background-color:rgb(139, 163, 177);
+  width:30%;
+  padding:20px;
+  display: flex;
+  flex-direction: column;
+  margin:auto;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+}
+
+ul {
+  list-style-type: none;
+  line-height: 30pt;
+}
+table th{background-color:rgb(139, 163, 177);}
+tr:nth-child(odd){background-color:#7291A1;}
+tr:nth-child(even){background-color:rgb(139, 163, 177);}
+th,tr,td{
+  text-align: left;
+  height:50px;
+  padding: 10px;
 }
 
 @keyframes App-logo-spin {
