@@ -69,7 +69,16 @@ img{
   justify-content: center;
   font-size: calc(10px + 2vmin);
 }
-
+.profile{
+  text-align: center;
+  margin-left: 120px;
+}
+.gender{
+  margin-left:-6px;
+}
+.about{
+  margin-left:30px;
+}
 ul {
   list-style-type: none;
   line-height: 30pt;
@@ -78,9 +87,10 @@ table th{background-color:rgb(139, 163, 177);}
 tr:nth-child(odd){background-color:#7291A1;}
 tr:nth-child(even){background-color:rgb(139, 163, 177);}
 th,tr,td{
-  text-align: left;
-  height:50px;
-  padding: 10px;
+  text-align: center;
+  width:15px;
+  height:100px;
+  padding: 5px;
 }
 
 @keyframes App-logo-spin {

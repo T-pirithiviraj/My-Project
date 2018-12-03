@@ -8,11 +8,14 @@
     width: 40%;
     
   }
-  
+  .profile{
+    text-align: center;
+    margin-left: 120px;
+  }
   .modal-header {
     background: #263238;
-    height: 40px;
-    line-height: 40px;
+    height: 50px;
+    line-height: 30px;
     padding: 5px 20px;
     text-align: right;
   }
@@ -26,6 +29,7 @@
   
   .modal-body {
     background-color: #3d6c8a;
+    
     padding: 10px 15px;
     text-align: center;
   }
@@ -33,7 +37,7 @@
   .modal-footer {
     background: #263238;
     margin-top:0px;
-    height: 35px;
+    height: 25px;
     padding: 15px;
   }
   
@@ -42,7 +46,7 @@
     cursor: pointer;
     float: right;
     font-size: 30px;
-    margin: 0;
+    margin-top: 0;
   }
   
   .close-modal-btn:hover {
@@ -64,17 +68,18 @@
     float:right;
   }
   
- 
+/*  
   .back-drop {
     background-color: rgba(48, 49, 48, 0.42);
     height: 100%;
     position: fixed;
     transition: all 1.3s;
     width: 100%;
-  }
+  } */
   
   .open-modal-btn {
-    margin: 15px;
+    text-align: center;
+    margin: 20px;
     padding: 10px;
     font-weight: bold;
     float:right;

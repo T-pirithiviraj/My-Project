@@ -4,15 +4,88 @@ import { Header } from "./components/Header";
 import Modal from './components/Modal';
 import { Input } from "./components/Input";
 
-// import { details } from "./components/details";
+function contentEditable(WrappedComponent) {
+  return class extends React.Component {
+    state = {
+      editing: false
+    }
+
+    toggleEdit = (e) => {
+      e.stopPropagation();
+      if (this.state.editing) {
+        this.cancel();
+      } else {
+        this.edit();
+      }
+    };
+
+    edit = () => {
+      this.setState({
+        editing: true
+      }, () => {
+        this.domElm.focus();
+      });
+    };
+
+    save = () => {
+      this.setState({
+        editing: false
+      }, () => {
+        if (this.props.onSave && this.isValueChanged()) {
+          console.log('Value is changed', this.domElm.textContent);
+        }
+      });
+    };
+
+    cancel = () => {
+      this.setState({
+        editing: false
+      });
+    };
+
+    isValueChanged = () => {
+      return this.props.value !== this.domElm.textContent
+    };
+
+    handleKeyDown = (e) => {
+      switch (e) {
+        case 'Enter':
+        case 'Escape':
+          this.save();
+          break;
+      }
+    };
+
+    render() { 
+      let editOnClick = true;
+      const {editing} = this.state;
+      if (this.props.editOnClick !== undefined) {
+        editOnClick = this.props.editOnClick;
+      }
+      return (
+        <WrappedComponent
+          className={editing ? 'editing' : ''}
+          onClick={editOnClick ? this.toggleEdit : undefined}
+          contentEditable={editing}
+          ref={(domNode) => {
+            this.domElm = domNode;
+          }}
+          onBlur={this.save}
+          onKeyDown={this.handleKeyDown}
+          {...this.props}
+      >
+        {this.props.value}
+      </WrappedComponent>
+      )
+    }
+  }
+}
+
+
 class App extends Component {
   constructor(props){
     super(props);
     this.add_row=this.add_row.bind(this);
-    this.updateComponentValue=this.updateComponentValue.bind(this);
-    this.changeEditMode=this.changeEditMode.bind(this);
-    this.renderEditView=this.renderEditView.bind(this);
-    this.renderDefaultValue=this.renderDefaultView.bind(this);
     this.onGenderChange=this.onGenderChange.bind(this);
     this.state = {
       Data: [
@@ -32,7 +105,7 @@ class App extends Component {
           id:3,
           name:'Sethu',
           gender:'Male',
-          description:'HR Manager'    
+          description:'HR Manager1'    
         },
         {
           id:4,
@@ -44,21 +117,24 @@ class App extends Component {
           id:5,
           name:'Gautham',
           gender:'Male',
-          description:'HR Manager'
+          description:'HR Manager2'
         }
-      ],
-      isInEditMode : false,
-      isEditIndex : 0,
+      ], 
       isShowing : false,
+      modalIndex:'',
+     // isViewIndex:0,
       gender: ''
     }
   }
-  openModalHandler = () => {
+  openModalHandler = (index) => {
+    console.log(index);
     this.setState({
-        isShowing: true
+      isShowing: true,
+      modalIndex:index
+    //  isViewIndex :index
+           
       });
     }
-
   closeModalHandler = () => {
     this.setState({
         isShowing: false
@@ -76,110 +152,7 @@ class App extends Component {
     this.setState({
     Data:this.state.Data
     });
-  }
-  changeEditMode = (index) =>{
-    this.setState({
-   
-      isInEditMode : !this.state.isInEditMode ,
-      isEditIndex : index   
-    })
-  }
-  updateComponentValue = ((ind) =>{
-    let newState = this.state;
-    newState.Data[ind] = {
-    name:this.refs.name.value,
-    gender:this.state.gender,
-    description:this.refs.description.value}; 
-    console.log(ind);
-    this.setState({ 
-      isInEditMode: false,
-      Data:newState.Data
-    })
-  });
-
-  renderEditView = (ind) =>{
-    return(
-    <div className="editData">
-      <form>
-        <ul>
-          <li className="editList">Name <input type="text" 
-          defaultValue={this.state.Data[this.state.isEditIndex].name}
-          ref="name" /></li><hr />
-
-        <li>Gender<br></br><input type="radio"
-          name="gender" defaultChecked={this.state.Data[this.state.isEditIndex].gender === "Male" ? 
-          "checked":""}
-          value="Male"
-          onChange={(e) => this.onGenderChange('Male')} />Male<span></span>
-
-        <input type="radio"
-          name="gender" defaultChecked={this.state.Data[this.state.isEditIndex].gender ==="Female" ? 
-          "checked":""}
-          value="Female"
-          onChange={(e) => this.onGenderChange('Female')} />Female</li><hr />
-
-          <li className="editList">Description <input type="textarea"
-          defaultValue={this.state.Data[this.state.isEditIndex].description}
-          ref="description" /></li>
-
-          <div><button onClick={this.changeEditMode}>Cancel</button><span></span>
-          <button onClick={()=>{this.updateComponentValue(ind);}}>Save</button>
-          </div>
-        </ul>
-      </form>
-    </div>
-    )
-  }
-  renderDefaultView = () =>{
-    return(
-      <div>
-        <Header />
-        <div>
-          { this.state.isShowing ? <div onClick={this.closeModalHandler} className="back-drop"></div> : null }
-            <button className="open-modal-btn" onClick={this.openModalHandler}>Add Employee</button>
-              <Modal
-                className="modal"
-                show={this.state.isShowing}
-                close={this.closeModalHandler}>
-                 <div className="input">
-                    <Input addrow={this.add_row} />
-                 </div> 
-              </Modal>
-        </div>
-        <div className ="hr_data">
-        <table id='employee'>
-        <thead>
-          <tr>
-            <th><h3>Profile</h3></th>
-            <th><h3>Name</h3></th>
-            <th><h3>Gender</h3></th>  
-            <th><h3>About</h3></th>  
-            <th><h3>View</h3></th>
-            <th><h3>Edit</h3></th>
-            <th><h3>Delete</h3></th>         
-          </tr>
-        </thead>
-        <tbody>
-        {
-          this.state.Data.map((item,index) =>(
-            <tr key={index}>  
-              <td><img src={item.gender === "Female" ? "http://www.lagunawoodspodiatry.com/images/2016/12/06/female_avatar.jpg" : "https://i1.wp.com/dizitalsquare.com/wp-content/uploads/2018/07/Male-Avatar.png"} alt="123" /></td>
-              <td>{item.name}</td>
-              <td>{item.gender}</td>
-              <td>{item.description}</td>
-              <td><button onclick={this.view}>View</button></td>
-              <td><button onClick={() => {this.changeEditMode(index)}}>Edit</button></td>
-              <td><button onClick={() => { this.deleteRow(index); }}>delete</button></td>
-              {/* <td><button onClick={this.full_details}>click</button></td> */}
-            </tr>                   
-          ))
-        }      
-        </tbody>
-        </table>    
-        </div>
-      </div> 
-    )
-  }
+  } 
   deleteRow = (index) => { 
     const newRows = this.state.Data.slice(0, index).concat(this.state.Data.slice(index + 1));
     this.setState({
@@ -187,10 +160,57 @@ class App extends Component {
     });
   };
   render(){
-    
-    //return this.renderDefaultView();
-    return this.state.isInEditMode ? this.renderEditView(this.state.isEditIndex) :this.renderDefaultView()
+  // let Editabletable = contentEditable('table');
+   let Editabledata = contentEditable('td');
+    return(
+    <div>
+    <Header />
+    <Modal
+            className="modal"
+            show={this.state.isShowing}
+            close={this.closeModalHandler} >
+            {this.state.modalIndex ===''? <div className="input"><Input addrow={this.add_row} /></div> :<div><div className="profile"><img src={this.state.Data[this.state.modalIndex].gender === "Female" ? "http://www.lagunawoodspodiatry.com/images/2016/12/06/female_avatar.jpg" : "https://i1.wp.com/dizitalsquare.com/wp-content/uploads/2018/07/Male-Avatar.png"} alt="123" /></div> <div>Name : {this.state.Data[this.state.modalIndex].name}</div><div className="gender">Gender : {this.state.Data[this.state.modalIndex].gender}</div><div className="about">About : {this.state.Data[this.state.modalIndex].description}</div></div>}        
+    </Modal>
+    <div>
+      { this.state.isShowing ? <div onClick={this.closeModalHandler} className="back-drop"></div> : null }
+        <button className="open-modal-btn" onClick={() =>this.openModalHandler('')} ref="Add Emmployee">Add Employee</button>
+   
+    </div>
+    <div className ="hr_data">
+    <table id='employee'>
+    <thead>
+      <tr>
+        <th><h3>Profile</h3></th>
+        <th><h3>Name</h3></th>
+        <th><h3>Gender</h3></th>  
+        <th><h3>About</h3></th>  
+        <th><h3>View</h3></th>
+        <th><h3>Delete</h3></th>         
+      </tr>
+    </thead>
+    <tbody>
+    {
+      this.state.Data.map((item,index) =>(
+        <tr key={index}>  
+          <td > 
+            <img src={item.gender === "Female" ? "http://www.lagunawoodspodiatry.com/images/2016/12/06/female_avatar.jpg" : "https://i1.wp.com/dizitalsquare.com/wp-content/uploads/2018/07/Male-Avatar.png"} alt="123" /></td>
+          <Editabledata value={item.name} /> 
+          <td>{item.gender}</td>
+          <Editabledata value={item.description} />
+          <td>  { this.state.isShowing ? <div onClick={() =>this.closeModalHandler(index)} className="back-drop"></div> : null }
+          <button  onClick={() => this.openModalHandler(index)} ref="view employee">View</button>
       
+          </td>
+          <td><button onClick={() => { this.deleteRow(index); }}>delete</button></td>
+          {/* <td><button onClick={this.full_details}>click</button></td> */}
+        </tr>                   
+      ))
+    }      
+    </tbody>
+    </table>    
+    </div>
+  </div> 
+    )   
   }
 }
 const container = document.createElement("div");
